@@ -60,7 +60,7 @@ local function moveToTarget()
         end
 
         -- 13 saniye bekle ve yeniden bağlan
-        wait(4)
+        wait(7)
         teleportService:TeleportToPlaceInstance(game.PlaceId, game.JobId, player)
     end
 end
