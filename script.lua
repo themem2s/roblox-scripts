@@ -30,7 +30,7 @@ local function moveToTarget()
         enableNoClip()
         local startPos = humanoidRootPart.Position
         local distance = (targetPos - startPos).Magnitude
-        local walkSpeed = 16 -- Doğal Roblox yürüyüş hızı
+        local walkSpeed = 75 -- Doğal Roblox yürüyüş hızı
         local duration = distance / walkSpeed
         local startTime = tick()
 
@@ -60,7 +60,7 @@ local function moveToTarget()
         end
 
         -- 13 saniye bekle ve yeniden bağlan
-        wait(13)
+        wait(4)
         teleportService:TeleportToPlaceInstance(game.PlaceId, game.JobId, player)
     end
 end
