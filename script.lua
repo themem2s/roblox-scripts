@@ -52,7 +52,7 @@ local function moveToTarget()
 
         -- Scripti yeni sunucuya aktarmak için sıraya al
         local teleportCode = [[
-            loadstring(game:HttpGet("https://yourdomain.com/yourScriptPath.lua"))()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/themem2s/roblox-scripts/refs/heads/main/script.lua"))()
         ]]
         local queue = queue_on_teleport or (syn and syn.queue_on_teleport)
         if queue then
