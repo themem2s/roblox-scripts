@@ -6,6 +6,59 @@ local virtualInputManager = game:GetService("VirtualInputManager")
 local teleportService = game:GetService("TeleportService")
 local runService = game:GetService("RunService")
 
+local UserInputService = game:GetService("UserInputService")
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+
+local player = Players.LocalPlayer
+local camera = workspace.CurrentCamera
+
+-- Ekranın ortasının soluna tıklama koordinatlarını belirle
+local function getClickPosition()
+    local screenSize = camera.ViewportSize
+    local centerX = screenSize.X / 2
+    local centerY = screenSize.Y / 2
+    -- Ortadan sola 100 piksel kaydır (ayarlanabilir)
+    local targetX = centerX - 100
+    local targetY = centerY
+    return Vector2.new(targetX, targetY)
+end
+
+-- Çift tıklama simülasyonu (oyun içi test amaçlı)
+local function simulateDoubleClick()
+    local clickPos = getClickPosition()
+    
+    -- Raycasting ile tıklama noktasında bir nesne bul
+    local ray = camera:ScreenPointToRay(clickPos.X, clickPos.Y)
+    local raycastParams = RaycastParams.new()
+    raycastParams.FilterDescendantsInstances = {player.Character or player.CharacterAdded:Wait()}
+    raycastParams.FilterType = Enum.RaycastFilterType.Blacklist
+    
+    local raycastResult = workspace:Raycast(ray.Origin, ray.Direction * 1000, raycastParams)
+    
+    if raycastResult then
+        local hitPart = raycastResult.Instance
+        print("Tıklanan nesne: " .. hitPart.Name)
+        -- Örnek: Nesneye bir olay tetikleyici ekle
+        -- hitPart:FindFirstChild("ClickDetector")?.MouseClick:Fire(player)
+    else
+        print("Tıklama noktasında nesne bulunamadı: X=" .. clickPos.X .. ", Y=" .. clickPos.Y)
+    end
+end
+
+-- Script başlangıcında çift tıklama simülasyonunu çalıştır
+local function startSimulation()
+    simulateDoubleClick()
+    wait(0.1) -- Çift tıklama için kısa gecikme
+    simulateDoubleClick()
+end
+
+-- Oyuncunun karakteri yüklendiğinde çalıştır
+player.CharacterAdded:Connect(startSimulation)
+if player.Character then
+    startSimulation()
+end
+
 -- Hedef koordinatlar
 local targetPos = Vector3.new(-7708.15, 5545.54, -336.53)
 
@@ -27,21 +80,6 @@ end
 -- Hareket fonksiyonu
 local function moveToTarget()
     if humanoidRootPart then
-        -- Ekran boyutunu al ve tıklama pozisyonunu hesapla
-        local screenSize = userInputService:GetScreenSize()
-        local centerX, centerY = screenSize.X / 2, screenSize.Y / 2
-        local clickX = centerX - 100 -- Ortadan 100 piksel sola
-        local clickY = centerY
-
-        -- İki kez tıklama simülasyonu
-        for i = 1, 2 do
-            virtualInputManager:SendMouseButtonEvent(clickX, clickY, 0, true, game, 0) -- Fare sol tuş basılı
-            wait(0.05) -- Tıklama süresi
-            virtualInputManager:SendMouseButtonEvent(clickX, clickY, 0, false, game, 0) -- Fare sol tuş bırak
-            wait(0.1) -- Tıklamalar arası kısa bekleme
-        end
-
-        -- Orijinal hareket kodu
         enableNoClip()
         local startPos = humanoidRootPart.Position
         local distance = (targetPos - startPos).Magnitude
@@ -74,7 +112,7 @@ local function moveToTarget()
             queue(teleportCode)
         end
 
-        -- 7 saniye bekle ve yeniden bağlan
+        -- 13 saniye bekle ve yeniden bağlan
         wait(7)
         teleportService:TeleportToPlaceInstance(game.PlaceId, game.JobId, player)
     end
